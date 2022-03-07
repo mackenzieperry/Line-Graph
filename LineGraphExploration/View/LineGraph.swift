@@ -9,6 +9,7 @@ import SwiftUI
 
 struct LineGraph: View {
     var data: [CGFloat]
+    var color: Color
     @State var currentPlot = ""
     
     @State var offset: CGSize = .zero
@@ -43,7 +44,7 @@ struct LineGraph: View {
                 }
                 
                 .strokedPath(StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
-                .foregroundColor(Color.purple)
+                .foregroundColor(color)
             }
             .overlay(
                 VStack {
@@ -92,6 +93,6 @@ struct LineGraph: View {
 
 struct LineGraph_Previews: PreviewProvider {
     static var previews: some View {
-        LineGraph(data: samplePlot)
+        LineGraph(data: samplePlot, color: .purple)
     }
 }
