@@ -8,18 +8,43 @@
 import SwiftUI
 
 struct LineGraph: View {
-    var data: [CGFloat]
     var color: Color
+    var data: [Double]
     @State var currentPlot = ""
     
     @State var offset: CGSize = .zero
     @State var showPlot = false
-    
+
     var screenWidth = UIScreen.main.bounds.width
+    
+    
+    var stepWidth: CGFloat {
+         if data.count < 2 {
+             return 0
+         }
+         return screenWidth / CGFloat(data.count)
+     }
+
+
+    var stepHeight: CGFloat {
+        var min: Double?
+        var max: Double?
+        if let minPoint = data.min(), let maxPoint = data.max(), minPoint != maxPoint {
+            min = minPoint
+            max = maxPoint
+        } else {
+            return 0
+        }
+        if let min = min, let max = max, min != max {
+            return 140 / CGFloat(max-min)
+        }
+        return 0
+    }
+    
     var body: some View {
         GeometryReader { proxy in
             let height = proxy.size.height
-            let width = (proxy.size.width) / CGFloat(data.count)
+            let width = (proxy.size.width) / CGFloat(data.count-1)
             let maxPoint = (data.max() ?? 0) + 100
             
             let points = data.enumerated().compactMap { item -> CGPoint in
@@ -31,21 +56,12 @@ struct LineGraph: View {
                 let pathWidth = width * CGFloat(item.offset)
                 return CGPoint(x: pathWidth, y: -pathHeight + height)
             }
-                
             ZStack {
-                Path { path in
-                    // drawing the points
-                    path.move(to: CGPoint(x: 0, y: 0))
-                    path.addLines(points)
-         //           Path.quadCurvedPathWithPoints(points: points, step: CGPoint(x: 0, y: 0), globalOffset: 0)
-                    
-                
-                    //path.addQuadCurve(to: CGPoint(
-                }
-                
+                Path.quadCurvedPathWithPoints(points: data, step: CGPoint(x: stepWidth, y: -stepHeight), globalOffset: nil)
                 .strokedPath(StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
                 .foregroundColor(color)
             }
+            .offset(y: height)
             .overlay(
                 VStack {
                     Circle()
@@ -71,18 +87,12 @@ struct LineGraph: View {
             .gesture(DragGesture(minimumDistance: 0).onChanged { value in
                 withAnimation { showPlot = true }
                 let translation = value.location.x - (screenWidth / 2)
-                //print("Translation:\(translation)")
                 let add = CGFloat(data.count / 2 + 1)
                 let index = max(min(Int((translation / width).rounded() + add), data.count - 1), 0)
-               // print("\((translation / width).rounded() + 3)")
-                //print(index)
-                
                 withAnimation(.easeInOut(duration: 0.1)) {
                     offset = CGSize(width: points[index].x - (screenWidth / 2), height: points[index].y - height)
                 }
-                
-                //  offset = CGSize(width: translation, height: 0)
-                
+                                
             }.onEnded { _ in
                 withAnimation { showPlot = false }
             })
@@ -93,6 +103,6 @@ struct LineGraph: View {
 
 struct LineGraph_Previews: PreviewProvider {
     static var previews: some View {
-        LineGraph(data: samplePlot, color: .purple)
+        LineGraph(color: .purple, data: samplePlot)
     }
 }
