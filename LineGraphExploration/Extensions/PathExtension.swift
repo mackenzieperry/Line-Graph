@@ -120,13 +120,6 @@ extension Path {
         if (points.count < 2){
             return path
         }
-   /*     let yValues = points.map(\.y)
-        let xValues = points.map(\.x)
-        guard let minX = xValues.min(),
-              let maxX = xValues.max(),
-              let minY = yValues.min(),
-              let maxY = yValues.max() else { return }
-        let minPoint = CGPoint(x: minX, y: minY)*/
         let offset = globalOffset ?? points.min()!
 //        guard let offset = points.min() else { return path }
         var p1 = CGPoint(x: 0, y: CGFloat(points[0]-offset)*step.y)
