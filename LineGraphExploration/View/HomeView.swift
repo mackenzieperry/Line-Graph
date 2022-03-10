@@ -8,16 +8,26 @@
 import SwiftUI
 
 struct HomeView: View {
+    
+    //@State var currentPoint: String
+    
     var body: some View {
         
+        VStack{
         Text("Total Spending")
             .font(.title2)
         
-        LineGraph(color: .secondary, data: samplePlot2)
+        LineGraph(color: Color.secondary, data: samplePlot2)
             .frame(height: 150)
             .overlay(
-                LineGraph(color: .purple, data: samplePlot)
+                LineGraph(color: Color.purple, data: samplePlot)
+                    //.overlay(Text(currentPoint), alignment: .bottomTrailing)
+                    
             )
+            //Text(currentPoint)
+       
+        //Text(LineGraph.currentPlot)
+    }
     }
 }
 
@@ -26,6 +36,8 @@ struct HomeView_Previews: PreviewProvider {
         HomeView()
     }
 }
+
+
 
 let samplePlot: [Double] = [12, 35, 140, 162, 245, 300, 350, 360, 411, 425, 430, 457, 468, 530, 550, 600, 620, 625, 1000]
 

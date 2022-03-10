@@ -10,21 +10,20 @@ import SwiftUI
 struct LineGraph: View {
     var color: Color
     var data: [Double]
-    @State var currentPlot = ""
+    @State var currentPoint: String = "" 
     
     @State var offset: CGSize = .zero
     @State var showPlot = false
+    @State var showLabel = false
 
     var screenWidth = UIScreen.main.bounds.width
     
-    
     var stepWidth: CGFloat {
-         if data.count < 2 {
-             return 0
-         }
-         return screenWidth / CGFloat(data.count)
-     }
-
+        if data.count < 2 {
+            return 0
+        }
+        return screenWidth / CGFloat(data.count)
+    }
 
     var stepHeight: CGFloat {
         var min: Double?
@@ -36,7 +35,7 @@ struct LineGraph: View {
             return 0
         }
         if let min = min, let max = max, min != max {
-            return 140 / CGFloat(max-min)
+            return 140 / CGFloat(max - min)
         }
         return 0
     }
@@ -44,7 +43,7 @@ struct LineGraph: View {
     var body: some View {
         GeometryReader { proxy in
             let height = proxy.size.height
-            let width = (proxy.size.width) / CGFloat(data.count-1)
+            let width = (proxy.size.width) / CGFloat(data.count - 1)
             let maxPoint = (data.max() ?? 0) + 100
             
             let points = data.enumerated().compactMap { item -> CGPoint in
@@ -58,27 +57,17 @@ struct LineGraph: View {
             }
             ZStack {
                 Path.quadCurvedPathWithPoints(points: data, step: CGPoint(x: stepWidth, y: -stepHeight), globalOffset: nil)
-                .strokedPath(StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
-                .foregroundColor(color)
+                    .strokedPath(StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
+                    .foregroundColor(color)
             }
             .offset(y: height)
             .overlay(
-                VStack {
-                    Circle()
-                        .fill(Color.purple)
-                        .frame(width: 22, height: 22)
-                        .overlay(
-                            Circle()
-                                .fill(.white)
-                                .frame(width: 10, height: 10)
-                        )
-                }
-                .frame(width: screenWidth, height: 150)
-                    
-                // frame height / 2
-                .offset(y: 75)
-                .offset(offset)
-                .opacity(showPlot ? 1 : 0),
+                trackingCircle
+                    .frame(width: screenWidth, height: 150)
+                    // frame height / 2
+                    .offset(y: 75)
+                    .offset(offset)
+                    .opacity(showPlot ? 1 : 0),
                 alignment: .bottomLeading
             )
             
@@ -86,23 +75,44 @@ struct LineGraph: View {
             
             .gesture(DragGesture(minimumDistance: 0).onChanged { value in
                 withAnimation { showPlot = true }
+                withAnimation { showLabel = true }
                 let translation = value.location.x - (screenWidth / 2)
                 let add = CGFloat(data.count / 2 + 1)
                 let index = max(min(Int((translation / width).rounded() + add), data.count - 1), 0)
+                currentPoint = "Day \(index)\n $\(data[index])"
                 withAnimation(.easeInOut(duration: 0.1)) {
                     offset = CGSize(width: points[index].x - (screenWidth / 2), height: points[index].y - height)
                 }
-                                
+                
             }.onEnded { _ in
                 withAnimation { showPlot = false }
+                withAnimation { showLabel = false }
             })
         }
+        .overlay(
+            Text(currentPoint).opacity(showLabel ? 1 : 0),
+            alignment: .bottomTrailing
+        )
+        
         .padding(.horizontal, 10)
+    }
+}
+
+var trackingCircle: some View {
+    VStack {
+        Circle()
+            .fill(Color.purple)
+            .frame(width: 12, height: 12)
+//            .overlay(
+//                Circle()
+//                    .fill(.white)
+//                    .frame(width: 10, height: 10)
+//            )
     }
 }
 
 struct LineGraph_Previews: PreviewProvider {
     static var previews: some View {
-        LineGraph(color: .purple, data: samplePlot)
+        LineGraph(color: Color.purple, data: samplePlot)
     }
 }
