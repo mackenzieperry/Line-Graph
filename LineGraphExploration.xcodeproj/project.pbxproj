@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3A20098827DDBBAE002B83C9 /* Line.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A20098727DDBBAE002B83C9 /* Line.swift */; };
 		BAABD9CB27D5108A00FEB27C /* LineGraphExplorationApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAABD9CA27D5108A00FEB27C /* LineGraphExplorationApp.swift */; };
 		BAABD9CD27D5108A00FEB27C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAABD9CC27D5108A00FEB27C /* ContentView.swift */; };
 		BAABD9CF27D5108C00FEB27C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BAABD9CE27D5108C00FEB27C /* Assets.xcassets */; };
@@ -37,6 +38,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		3A20098727DDBBAE002B83C9 /* Line.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Line.swift; sourceTree = "<group>"; };
 		BAABD9C727D5108A00FEB27C /* LineGraphExploration.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LineGraphExploration.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BAABD9CA27D5108A00FEB27C /* LineGraphExplorationApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineGraphExplorationApp.swift; sourceTree = "<group>"; };
 		BAABD9CC27D5108A00FEB27C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -140,6 +142,7 @@
 			children = (
 				BAABD9F527D54BAC00FEB27C /* LineGraph.swift */,
 				BAABD9F727D54C1300FEB27C /* HomeView.swift */,
+				3A20098727DDBBAE002B83C9 /* Line.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -285,6 +288,7 @@
 				BAABD9CD27D5108A00FEB27C /* ContentView.swift in Sources */,
 				BAABD9F827D54C1300FEB27C /* HomeView.swift in Sources */,
 				BAABD9FB27D5775F00FEB27C /* PathExtension.swift in Sources */,
+				3A20098827DDBBAE002B83C9 /* Line.swift in Sources */,
 				BAABD9F627D54BAC00FEB27C /* LineGraph.swift in Sources */,
 				BAABD9CB27D5108A00FEB27C /* LineGraphExplorationApp.swift in Sources */,
 			);

@@ -8,111 +8,57 @@
 import SwiftUI
 
 struct LineGraph: View {
-    var color: Color
-    var data: [Double]
-    @State var currentPoint: String = "" 
+    let color1: Color
+    let color2: Color
+    let data1: [Double]
+    let data2: [Double]
+    @State var touchLocation: CGPoint = .zero
     
-    @State var offset: CGSize = .zero
-    @State var showPlot = false
-    @State var showLabel = false
+    @State var showDetails = false
 
     var screenWidth = UIScreen.main.bounds.width
-    
-    var stepWidth: CGFloat {
-        if data.count < 2 {
-            return 0
-        }
-        return screenWidth / CGFloat(data.count)
-    }
-
-    var stepHeight: CGFloat {
-        var min: Double?
-        var max: Double?
-        if let minPoint = data.min(), let maxPoint = data.max(), minPoint != maxPoint {
-            min = minPoint
-            max = maxPoint
-        } else {
-            return 0
-        }
-        if let min = min, let max = max, min != max {
-            return 140 / CGFloat(max - min)
-        }
-        return 0
-    }
     
     var body: some View {
         GeometryReader { proxy in
             let height = proxy.size.height
-            let width = (proxy.size.width) / CGFloat(data.count - 1)
-            let maxPoint = (data.max() ?? 0) + 100
-            
-            let points = data.enumerated().compactMap { item -> CGPoint in
-                // getting progress and multiplyting with height
-                let progress = item.element / maxPoint
-                let pathHeight = progress * height
-                
-                // width
-                let pathWidth = width * CGFloat(item.offset)
-                return CGPoint(x: pathWidth, y: -pathHeight + height)
-            }
             ZStack {
-                Path.quadCurvedPathWithPoints(points: data, step: CGPoint(x: stepWidth, y: -stepHeight), globalOffset: nil)
-                    .strokedPath(StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
-                    .foregroundColor(color)
+                Line(color: color1, data: data1, touchLocation: self.$touchLocation, showCircle: showDetails)
+                Line(color: color2, data: data2, touchLocation: self.$touchLocation, showCircle: showDetails)
             }
-            .offset(y: height)
-            .overlay(
-                trackingCircle
-                    .frame(width: screenWidth, height: 150)
-                    // frame height / 2
-                    .offset(y: 75)
-                    .offset(offset)
-                    .opacity(showPlot ? 1 : 0),
-                alignment: .bottomLeading
-            )
-            
             .contentShape(Rectangle())
-            
             .gesture(DragGesture(minimumDistance: 0).onChanged { value in
-                withAnimation { showPlot = true }
-                withAnimation { showLabel = true }
-                let translation = value.location.x - (screenWidth / 2)
-                let add = CGFloat(data.count / 2 + 1)
-                let index = max(min(Int((translation / width).rounded() + add), data.count - 1), 0)
-                currentPoint = "Day \(index)\n $\(data[index])"
-                withAnimation(.easeInOut(duration: 0.1)) {
-                    offset = CGSize(width: points[index].x - (screenWidth / 2), height: points[index].y - height)
-                }
-                
+                withAnimation { showDetails = true }
+                self.touchLocation = value.location
             }.onEnded { _ in
-                withAnimation { showPlot = false }
-                withAnimation { showLabel = false }
+                withAnimation { showDetails = false }
             })
+            .overlay(
+                VStack {
+                    Text(getCurrentLabel(toPoint: touchLocation, width: proxy.size.width, height: height, data: data1))
+                    Text(getCurrentLabel(toPoint: touchLocation, width: proxy.size.width, height: height, data: data2))
+                }
+                .opacity(showDetails ? 1 : 0),
+                alignment: .bottomTrailing
+            )
         }
-        .overlay(
-            Text(currentPoint).opacity(showLabel ? 1 : 0),
-            alignment: .bottomTrailing
-        )
-        
         .padding(.horizontal, 10)
     }
-}
-
-var trackingCircle: some View {
-    VStack {
-        Circle()
-            .fill(Color.purple)
-            .frame(width: 12, height: 12)
-//            .overlay(
-//                Circle()
-//                    .fill(.white)
-//                    .frame(width: 10, height: 10)
-//            )
+    
+    func getCurrentLabel(toPoint: CGPoint, width: CGFloat, height: CGFloat, data: [Double]) -> String {
+        let stepWidth: CGFloat = width / CGFloat(data.count)
+        let index:Int = Int(floor(toPoint.x/stepWidth))
+        if (index >= 0 && index < data.count){
+            return "Day \(index+1)\n $\(data[index])"
+        } else {
+            return ""
+        }
     }
 }
 
-struct LineGraph_Previews: PreviewProvider {
-    static var previews: some View {
-        LineGraph(color: Color.purple, data: samplePlot)
-    }
-}
+
+
+//struct LineGraph_Previews: PreviewProvider {
+//    static var previews: some View {
+//        LineGraph(color: Color.purple, data: samplePlot, touchLocation: .constant(CGPoint(x: 100, y: 12)))
+//    }
+//}
