@@ -11,7 +11,7 @@ struct LineGraph: View {
     let color1: Color
     let color2: Color
     let data1: [Double]
-    let data2: [Double]
+  //  let data2: [Double]
     @State var touchLocation: CGPoint = .zero
     
     @State var showDetails = false
@@ -22,8 +22,8 @@ struct LineGraph: View {
         GeometryReader { proxy in
             let height = proxy.size.height
             ZStack {
-                Line(color: color1, data: data1, touchLocation: self.$touchLocation, showCircle: showDetails)
-                Line(color: color2, data: data2, touchLocation: self.$touchLocation, showCircle: showDetails)
+                Line(color: color2, data: data1, touchLocation: self.$touchLocation, showCircle: showDetails, totalDays: 30)
+        //        Line(color: color2, data: data2, touchLocation: self.$touchLocation, showCircle: showDetails)
             }
             .contentShape(Rectangle())
             .gesture(DragGesture(minimumDistance: 0).onChanged { value in
@@ -34,8 +34,8 @@ struct LineGraph: View {
             })
             .overlay(
                 VStack {
-                    Text(getCurrentLabel(toPoint: touchLocation, width: proxy.size.width, height: height, data: data1))
-                    Text(getCurrentLabel(toPoint: touchLocation, width: proxy.size.width, height: height, data: data2))
+                    Text(getCurrentLabel(toPoint: touchLocation, width: proxy.size.width, height: height, data: data1, totalDays: 30))
+             //       Text(getCurrentLabel(toPoint: touchLocation, width: proxy.size.width, height: height, data: data2))
                 }
                 .opacity(showDetails ? 1 : 0),
                 alignment: .bottomTrailing
@@ -44,8 +44,8 @@ struct LineGraph: View {
         .padding(.horizontal, 10)
     }
     
-    func getCurrentLabel(toPoint: CGPoint, width: CGFloat, height: CGFloat, data: [Double]) -> String {
-        let stepWidth: CGFloat = width / CGFloat(data.count)
+    func getCurrentLabel(toPoint: CGPoint, width: CGFloat, height: CGFloat, data: [Double], totalDays: CGFloat) -> String {
+        let stepWidth: CGFloat = width / totalDays
         let index:Int = Int(floor(toPoint.x/stepWidth))
         if (index >= 0 && index < data.count){
             return "Day \(index+1)\n $\(data[index])"

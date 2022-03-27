@@ -12,12 +12,13 @@ struct Line: View {
     let data: [Double]
     @Binding var touchLocation: CGPoint
     let showCircle: Bool
+    let totalDays: Int
     
     func stepWidth(totalWidth: CGFloat) -> CGFloat {
         if data.count < 2 {
             return 0
         }
-        return totalWidth / CGFloat(data.count)
+        return totalWidth / CGFloat(totalDays)
     }
 
     var stepHeight: CGFloat {
@@ -77,6 +78,6 @@ struct Line: View {
 
 struct Line_Previews: PreviewProvider {
     static var previews: some View {
-        Line(color: Color.purple, data: samplePlot, touchLocation: .constant(CGPoint(x: 100, y: 12)), showCircle: true)
+        Line(color: Color.purple, data: samplePlot, touchLocation: .constant(CGPoint(x: 100, y: 12)), showCircle: true, totalDays: 30)
     }
 }
